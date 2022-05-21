@@ -1,0 +1,6 @@
+[submodule "thirdparty/jsoncpp"]
+	path = thirdparty/jsoncpp
+	url = https://github.com/open-source-parsers/jsoncpp.git
+[submodule "thirdparty/rpclib"]
+	path = thirdparty/rpclib
+	url = https://github.com/rpclib/rpclib.git
