@@ -1,7 +1,7 @@
 # simpleDFS intro
 This is a implementation of a simple distributed file system.  
 It contains three modules: master, chunk_node and client.  
-It not very complete and is on working.  
+It is not very complete and on working.  
 
 # Usage
 It uses some third party libraries as submodules, so you need to use 
@@ -13,4 +13,4 @@ to fetch these libraries
 
 # Prerequests
 * cmake >= 3.10
-* a cpp complier support c++11 standard
+* a cpp complier support c++14 standard
