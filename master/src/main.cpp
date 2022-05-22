@@ -1,9 +1,12 @@
 #include <iostream>
 #include <cstdlib>
-#include "master.h"
+#include "rpc.h"
 
 int main(){
-    master maste("/home/corporal/Works/c_cpp/simpleDFS/master/config.json");
-    
+    auto& m = master::getInstance();
+    m.init("/home/corporal/Works/c_cpp/simpleDFS/master/config.json");
+    rpc::server m_server(m.getPort());
+    bindAll(m_server);
+    m_server.run();
     return 0;
 }
