@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "master.h"
-#include "jsoncpp/json/json.h"
+#include "json/json.h"
 #include "rpc/server.h"
 #include "utils.h"
 
