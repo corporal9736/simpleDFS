@@ -2,9 +2,7 @@
 #define UTILS_H
 
 #include <string>
-#include <tuple>
-
-std::tuple<std::string, int> parseAddress(std::string address);
-
+#include <vector>
+std::vector<std::string> split(const std::string &str, const std::string &pattern);
 
 #endif //UTILS_H

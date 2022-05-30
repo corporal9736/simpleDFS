@@ -1,5 +1,5 @@
-#include <vector>
 #include "utils.h"
+#include "define.h"
 
 
 std::vector<std::string> split(const std::string &str, const std::string &pattern)
@@ -23,9 +23,9 @@ std::vector<std::string> split(const std::string &str, const std::string &patter
     return res;
 }
 
-std::tuple<std::string, int> parseAddress(std::string address){
-    auto vec = split(address,":");
-    std::string ip = vec[0];
-    int port = std::stoi(vec[1]);
-    return {ip, port};
-}
+/* address parseAddress(std::string address){ */
+/*     auto vec = split(address,":"); */
+/*     std::string ip = vec[0]; */
+/*     int port = std::stoi(vec[1]); */
+/*     return {ip, port}; */
+/* } */

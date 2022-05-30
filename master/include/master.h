@@ -19,7 +19,7 @@ class master: public PublicSingleton<master>
         master();
         bool isInited;
         std::string config_path;
-        config master_config;
+        config* master_config;
         std::vector<chunk_node_state> states;
         std::unordered_map<std::string, std::vector<chunk_meta>>* files; //file name as key
         

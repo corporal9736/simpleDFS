@@ -3,21 +3,48 @@
 #include <vector>
 #include <string>
 #include <unordered_set>
-    typedef struct struct_config {
-        std::string version;
-        std::string master_ip;
-        std::vector<std::string> chunk_node_ip;
-    } config;
 
-    typedef struct struct_chunk_node_state {
-        std::string chunk_node_ip;
-        int storge_left; //percent of left space
-    } chunk_node_state;
+    class address{
+        public:
+            address();
+            address(int *ip, int port);
+            address(const std::string& addr);
+            address(const address& addr);
+            const address& operator=(const address& addr);
+            uint8_t ip[4];
+            uint16_t port;
+    };
 
-    typedef struct struct_chunk_meta {
-        std::string chunk_hash;
-        std::unordered_set<std::string> chunk_node_ip;
-    } chunk_meta;
+    class address_hash{
+        public:
+            std::size_t operator()(const address& addr){
+                return std::hash<uint8_t>()(addr.ip[0]) ^
+                        std::hash<uint8_t>()(addr.ip[1]) ^
+                        std::hash<uint8_t>()(addr.ip[2]) ^
+                        std::hash<uint8_t>()(addr.ip[3]) ^
+                        std::hash<uint16_t>()(addr.port);
+            }
+    };
+    class config {
+        public:
+            config(const std::string& path);
+            address master_ip;
+            std::vector<address> chunk_node_ip;
+    };
+
+    class chunk_node_state {
+        public:
+            chunk_node_state();
+            address chunk_node_ip;
+            int storge_left; //percent of left space
+    };
+
+    class chunk_meta {
+        public:
+            chunk_meta();
+            std::string chunk_hash;
+            std::unordered_set<address, address_hash> chunk_node_ip;
+    };
 
     // typedef struct struct_file_meta{
     //     std::string file_name;
