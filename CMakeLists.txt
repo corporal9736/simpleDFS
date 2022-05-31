@@ -9,9 +9,9 @@ set(ENV{CRNT_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
 
 project(simpleDFS)
 
-add_subdirectory(master)
-add_subdirectory(client)
-add_subdirectory(chunk_node)
+add_subdirectory(master EXCLUDE_FROM_ALL)
+add_subdirectory(client EXCLUDE_FROM_ALL)
+add_subdirectory(chunk_node EXCLUDE_FROM_ALL)
 add_subdirectory(utils)
 add_subdirectory(thirdparty/rpclib)
 add_subdirectory(thirdparty/jsoncpp)
