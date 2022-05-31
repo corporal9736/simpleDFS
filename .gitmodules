@@ -7,3 +7,6 @@
 [submodule "thirdparty/pico"]
 	path = thirdparty/pico
 	url = https://github.com/corporal9736/PicoSHA2.git
+[submodule "thirdparty/tree"]
+	path = thirdparty/tree
+	url = https://github.com/erikerlandson/st_tree.git
