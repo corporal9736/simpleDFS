@@ -4,3 +4,6 @@
 [submodule "thirdparty/rpclib"]
 	path = thirdparty/rpclib
 	url = https://github.com/rpclib/rpclib.git
+[submodule "thirdparty/pico"]
+	path = thirdparty/pico
+	url = https://github.com/corporal9736/PicoSHA2.git
