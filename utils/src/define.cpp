@@ -30,6 +30,14 @@ const address& address::operator=(const address& addr){
     // TODO: implement operator =
 }
 
+const std::string address::getIp(){
+    // TODO: concat ip to string and return
+}
+
+const int address::getPort(){
+    return this->port;
+}
+
 config::config(const std::string& path){
     // TODO: parse config file and get config
     int m_ip[4] = {127,0,0,1};

@@ -11,6 +11,8 @@
             address(const std::string& addr);
             address(const address& addr);
             const address& operator=(const address& addr);
+            const std::string getIp();
+            const int getPort();
             uint8_t ip[4];
             uint16_t port;
     };
