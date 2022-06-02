@@ -11,7 +11,7 @@ std::string test(){
 
 std::vector<chunk_meta> get(const std::string& file_path){}
 
-std::vector<address> put(const std::string& path, int size){}
+std::vector<address> put(const std::string& path,const std::string& name, int size){}
 
 std::string getInfo(const std::string& file_path){}
 

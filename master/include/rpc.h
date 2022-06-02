@@ -16,7 +16,7 @@ std::vector<chunk_meta> get(const std::string& file_path);
 // put file to master, return a vector of chunk node address
 // which the chunks will be sent to
 // TODO: check how to express size
-std::vector<address> put(const std::string& path, int size);
+std::vector<address> put(const std::string& path,const std::string name, int size);
 
 // return the basic info of a file
 // if not exist return "not exist"
