@@ -1,6 +1,9 @@
 #include <vector>
 #include "define.h"
 #include "utils.h"
+#include <iostream>
+#include <fstream>
+#include "json/json.h"
 address::address(){
     for(int i=0;i<4;i++)
         this->ip[i]  = 0;
@@ -15,23 +18,40 @@ address::address(int*ip, int port){
 }
 address::address(const std::string& addr){
     // TODO: convert a string to address
-    this->ip[0] = 127;
-    this->ip[1] = 0;
-    this->ip[2] = 0;
-    this->ip[3] = 1;
-    this->port = 1234;
+    // addr is in the form of "ip:port"
+    // ip is in the form of "xxx.xxx.xxx.xxx"
+    // port is in the form of "xxxx"
+    std::string ip_str=addr.substr(0,addr.find(":"));
+    std::string port_str=addr.substr(addr.find(":")+1);
+    this->ip[0] = std::stoi(ip_str.substr(0,ip_str.find(".")));
+    ip_str=ip_str.substr(ip_str.find(".")+1);
+    this->ip[1] = std::stoi(ip_str.substr(0,ip_str.find(".")));
+    ip_str=ip_str.substr(ip_str.find(".")+1);
+    this->ip[2] = std::stoi(ip_str.substr(0,ip_str.find(".")));
+    ip_str=ip_str.substr(ip_str.find(".")+1);
+    this->ip[3] = std::stoi(ip_str);
+    this->port = std::stoi(port_str);
 }
 
 address::address(const address& addr){
     // TODO: implement copy constructor
+    for(int i=0;i<4;i++)
+        this->ip[i] = addr.ip[i];
+    this->port = addr.port;
 }
 
 const address& address::operator=(const address& addr){
     // TODO: implement operator =
+    for(int i=0;i<4;i++)
+        this->ip[i] = addr.ip[i];
+    this->port = addr.port;
+    return *this;
 }
 
 const std::string address::getIp(){
     // TODO: concat ip to string and return
+    std::string ip_str=std::to_string(this->ip[0])+"."+std::to_string(this->ip[1])+"."+std::to_string(this->ip[2])+"."+std::to_string(this->ip[3]);
+    return ip_str;
 }
 
 const int address::getPort(){
@@ -40,16 +60,18 @@ const int address::getPort(){
 
 config::config(const std::string& path){
     // TODO: parse config file and get config
-    int m_ip[4] = {127,0,0,1};
-    int port = 1234;
-    this->master_ip = address(m_ip, port);
-    int node_ip[4] = {127,0,0,1};
-    int node_1_port = 1235;
-    int node_2_port = 1236;
-    this->chunk_node_ip = {
-        address(node_ip,node_1_port),
-        address(node_ip,node_2_port)
-    };
+    //读Path文件，解析成json格式，获取master_ip和chunk_node_ip
+    Json::Value root;
+    Json::Reader reader;
+    std::ifstream ifs(path, std::ifstream::binary);
+    if(!reader.parse(ifs, root, false)){
+        std::cout<<"parse config file error!"<<std::endl;
+        exit(1);
+    }
+    this->master_ip = address(root["master_ip"].asCString());
+    for(int i=0;i<root["chunk_node_ip"].size();i++){
+        this->chunk_node_ip.push_back(address(root["chunk_node_ip"][i].asCString()));
+    }
 }
 
 
@@ -60,3 +82,8 @@ chunk_node_state::chunk_node_state(){
 chunk_meta::chunk_meta(){
     // TODO
 }
+
+file_meta::file_meta(){
+    // TODO
+}
+

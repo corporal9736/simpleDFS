@@ -45,13 +45,33 @@
         public:
             chunk_meta();
             std::string chunk_hash;
-            std::unordered_set<address, address_hash> chunk_node_ip;
+            // std::unordered_set<address, address_hash> chunk_node_ip;
+            std::vector<chunk_node_state> chunk_node_ip;
     };
 
     // typedef struct struct_file_meta{
     //     std::string file_name;
     //     std::vector<chunk_meta> chunks;
     // } file_meta;
+
+    class file_meta{
+        public:
+            file_meta();
+            std::string file_name;
+            std::string comments;
+            std::vector<chunk_meta> chunks;
+    };
+
+    class directory_node{
+        public:
+            directory_node();
+            std::string name;
+            // std::vector<directory_node> sub_dir;
+            std::vector<file_meta> files;
+            int addFile(const file_meta& file);
+            int delFile(const file_meta& file);
+    };
+
 
     
 

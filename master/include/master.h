@@ -14,6 +14,9 @@ class master: public PublicSingleton<master>
         const std::string test();
         void init(std::string config_path);
         int getPort();
+        std::vector<chunk_meta> get(const std::string& file_path);
+        std::vector<chunk_meta> put(const std::string& path,const std::string& name, int size);
+        std::string getInfo(const std::string& file_path);
         
     private:
         master();
@@ -21,10 +24,11 @@ class master: public PublicSingleton<master>
         std::string config_path;
         config* master_config;
         std::vector<chunk_node_state> states;
-        std::unordered_map<std::string, std::vector<chunk_meta>>* files; //file name as key
+        std::unordered_map<std::string, std::vector<chunk_meta>>* files; //file name as key//这里如果这样做的话就没法做目录树了
         
         void parseConfig();
         void getChunkStates();
-    };
+        
+};
 
 #endif //MASTER_H
