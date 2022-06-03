@@ -20,7 +20,7 @@ param:
     name:string: file name
     size:int(?): file size
 return:
-    vector<address>: the address of chunk_nodes that file should sent to
+    vector<chunk_meta>: the address of chunk_nodes that file should sent to
 
 ### getInfo
 param:

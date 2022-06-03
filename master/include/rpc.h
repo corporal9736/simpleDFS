@@ -16,15 +16,16 @@ std::vector<chunk_meta> get(const std::string& file_path);
 // put file to master, return a vector of chunk node address
 // which the chunks will be sent to
 // TODO: check how to express size
-std::vector<chunk_meta> put(const std::string& path,const std::string name, int size);
+std::vector<chunk_meta> put(const std::string& path,const std::string name, int size);//这里涉及到传文件的问题
 
 // return the basic info of a file
 // if not exist return "not exist"
 // if menu return the child file info
 std::string getInfo(const std::string& file_path);//这个的返回值不应该是string，但应该是啥呢，file_node吗？
 
-
 // used by chunk_node
+int chunkNodeSignIn(const std::string& ip, int port);
+
 
 // update master->states
 // also can be used for new chunk_node online
