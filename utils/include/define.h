@@ -53,7 +53,7 @@
             std::string chunk_hash;
             std::vector<address> chunk_node_ip;
             const Json::Value to_json() const;
-            friend void from_json(chunk_meta& chunk);
+            // friend void from_json(chunk_meta& chunk);
     };
 
     class file_meta{

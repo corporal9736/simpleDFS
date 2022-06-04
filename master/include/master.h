@@ -47,4 +47,6 @@ class master: public PublicSingleton<master>
         void splitChunk(file_meta* file);   
 };
 
+void master_test();
+
 #endif //MASTER_H

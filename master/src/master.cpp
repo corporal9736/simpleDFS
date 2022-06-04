@@ -1,3 +1,4 @@
+#include <cstdio>
 #include <iostream>
 #include <sys/stat.h>
 #include <vector>
@@ -50,14 +51,15 @@ std::vector<chunk_meta> master::get(const std::string& file_path){
     std::vector<chunk_meta> chunk_metas; 
     dir_node* dir = this->dir_root;
     std::vector<std::string> path_list = split(file_path, "/");
-    for(int i = 0; i < path_list.size(); i++){
+    int i=0;
+    for(i = 0; i < path_list.size()-1; i++){
         if(path_list[i] == "")
             continue;
         dir = dir->getSubDir(path_list[i]);
         if(dir == NULL)
             return chunk_metas;
     }
-    file_meta* file = dir->getFile(file_path);
+    file_meta* file = dir->getFile(path_list[i]);
     if(file == NULL)
         return chunk_metas;
     chunk_metas = file->chunks;
@@ -80,7 +82,7 @@ std::vector<chunk_meta> master::put(const std::string &path, const std::string &
         if(dir == NULL)
             return chunk_metas;
     }
-    file_meta* file = dir->getFile(path);
+    file_meta* file = dir->getFile(name);
     if(file == NULL){
         file_meta* new_file= new file_meta();
         new_file->file_name = name;
@@ -90,6 +92,13 @@ std::vector<chunk_meta> master::put(const std::string &path, const std::string &
         if(dir->addFile(new_file))
             return chunk_metas;
         chunk_metas = new_file->chunks;
+        //同时将文件信息Json后写入文件
+        std::string file_path = this->master_config->root_path + path;
+        std::string file_name = file_path + "/" + name;
+        std::ofstream ofs(file_name);
+        Json::Value root=new_file->to_json();
+        ofs<<root;
+        ofs.close();
     }
     else{
         return chunk_metas;
@@ -162,6 +171,9 @@ int master::mkdir(const std::string &path){
     }
     dir_node* new_dir = new dir_node();
     new_dir->name = path_list[path_list.size()-1];
+    //同时在硬盘上创建文件夹
+    std::string dir_path = this->master_config->root_path + path;//这个地址不对啊//坏了，这个地址对，更要命了//这，居然一切正常
+    ::mkdir(dir_path.c_str(), 0777);
     dir->sub_dir.push_back(new_dir);
     return 0;
 }
@@ -180,6 +192,10 @@ int master::rm(const std::string &path){
         if(dir == NULL)
             return -1;
     }
+    //同时在硬盘上删除文件
+    std::string dir_path = this->master_config->root_path + path;
+    remove(dir_path.c_str());
+
     dir->delFile(path_list[path_list.size()-1]);
     return 0;
 }
@@ -198,6 +214,19 @@ int master::rmdir(const std::string &path){
         if(dir == NULL)
             return -1;
     }
+    //同时删除硬盘上的此文件夹与文件夹下的所有文件
+    std::string dir_path = this->master_config->root_path + path;
+    DIR* dir_ptr = opendir(dir_path.c_str());
+    struct dirent* ptr;
+    while((ptr = readdir(dir_ptr)) != NULL){
+        if(strcmp(ptr->d_name, ".") == 0 || strcmp(ptr->d_name, "..") == 0)
+            continue;
+        std::string file_path = dir_path + "/" + ptr->d_name;
+        remove(file_path.c_str());
+    }
+    closedir(dir_ptr);
+    remove(dir_path.c_str());
+
     dir->delDir(path_list[path_list.size()-1]);
     return 0;
 }
@@ -224,7 +253,14 @@ void master::parseConfig(){
     // write result into this->master_config
     // this->master_config is a pointer to a config object
     this->master_config=new config(this->config_path);
-
+    //遍历address存到state里面
+    for(int i = 0; i < this->master_config->chunk_node_ip.size(); i++){
+        chunk_node_state state;
+        state.chunk_node_ip = this->master_config->chunk_node_ip[i];
+        state.storge_left = 0;
+        state.last_update_time = time(NULL);
+        this->states.push_back(state);
+    }
 }
 
 // std::vector<std:: string>getFiles(const std::string& path){
@@ -288,15 +324,53 @@ void master::parseFileTree(const std::string& path,dir_node* dir){
     closedir(dp);
 }
 
+std::string getUUID(){
+    // TODO
+    // generate a uuid
+    // return uuid
+    return "test";
+}
+
 void master::splitChunk(file_meta* file){
-    // int chunk_num=file->size/this->master_config->chunk_size+1;
-    // for(int i=0;i<chunk_num;i++){
-    //     chunk_meta chunk;
-    //     chunk.chunk_hash=hash(file->file_name+std::to_string(i));
-    //     for(int j=0;j<this->master_config->chunk_node_num;j++){
-    //         address addr=this->master_config->chunk_node_ip[j];
-    //         chunk.chunk_node_ip.push_back(addr);
-    //     }
-    //     file->chunks.push_back(chunk);
-    // }
+    int chunk_num=file->size/this->master_config->chunk_size+1;
+    for(int i=0;i<chunk_num;i++){
+        chunk_meta chunk;
+        //获取一个uuid
+        std::string uuid=getUUID();
+        chunk.chunk_hash=uuid;
+        //在state里随机取三个不同的chunk_node
+        //这里的取法需要考虑到node的剩余空间、热度等
+        //但是这里直接随机了
+        std::vector<address> chunk_node_ip;
+        //生成三个不同的随机数
+        int index[3]={0,0,0};
+        for(int j=0;j<3;j++){
+            if(this->states.size()<4){
+                std::cout<<"Error:no chunk_node"<<std::endl;
+                break;
+            }
+            index[j]=rand()%this->states.size();
+            for(int k=0;k<j;k++){
+                if(index[j]==index[k]){
+                    j--;
+                    break;
+                }
+            }
+        }
+        //取出对应的addr
+        for(int j=0;j<3;j++){
+            chunk_node_ip.push_back(this->states[index[j]].chunk_node_ip);
+        }
+        chunk.chunk_node_ip=chunk_node_ip;
+        file->chunks.push_back(chunk);
+    }
+}
+
+void master_test(){
+    auto& m=master::getInstance();
+    m.mkdir("/test2/test3");
+    m.put("/test2/test3","test.txt","test",80000000);
+    std::vector<chunk_meta> e=m.get("/test2/test.txt");
+    std::cout<<e[0].chunk_node_ip[0].to_string()<<std::endl;
+    std::cout<<m.ls("/test2")[0]<<std::endl;
 }

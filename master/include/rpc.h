@@ -2,6 +2,7 @@
 #define RPC_H
 #include "define.h"
 #include "master.h"
+#include "utils.h"
 
 
 void bindAll(rpc::server& server);
@@ -12,13 +13,13 @@ std::string test();
 
 // get file meta data from master
 // the meta should be in order
-std::vector<chunk_meta> get(const std::string& file_path);
+std::string get(const std::string& file_path);
 
 // put file to master, return a vector of chunk node address
 // which the chunks will be sent to
 // TODO: check how to express size
 //path是在目录树的path不是client的path
-std::vector<chunk_meta> put(const std::string& path,const std::string name,const std::string comment, int size);//这里涉及到传文件的问题
+std::string put(const std::string& path,const std::string name,const std::string comment, int size);//这里涉及到传文件的问题
 
 // return the basic info of a file
 // if not exist return "not exist"
@@ -38,7 +39,7 @@ int removeFile(const std::string& file_path);
 int removeDir(const std::string& dir_path);
 
 // used by chunk_node
-int chunkNodeSignIn(const chunk_node_state& state);
+// int chunkNodeSignIn(const chunk_node_state& state);
 
 
 // update master->states
