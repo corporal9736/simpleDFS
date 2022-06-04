@@ -16,7 +16,7 @@ master::master(){
 void master::init(std::string config_path){
     this->config_path = config_path;
     this->parseConfig();
-    this->getChunkStates();
+    // this->getChunkStates();
     this->parseFileTree();
     this->isInited = true;
 }
@@ -30,10 +30,10 @@ void master::parseConfig(){
     this->master_config=new config(this->config_path);
 }
 
-void master::getChunkStates(){//这个咋写？
-    // TODO
-    // get chunk node info and write to this->states
-}
+// void master::getChunkStates(){//这个咋写？
+//     // TODO
+//     // get chunk node info and write to this->states
+// }
 
 int master::getPort(){
     int port = 0;
@@ -68,12 +68,6 @@ std::string master::getInfo(const std::string &file_path){
 }
 
 void master::parseFileTree(){
-    Json::Reader reader;
-    std::ifstream ifs(this->master_config->file_tree_path, std::ifstream::binary);
-    if(!reader.parse(ifs, this->file_tree_root, false)){
-        std::cout<<"parse file tree error!"<<std::endl;
-        exit(1);
-    }
 }
 
 const bool is_directory(Json::Value node){

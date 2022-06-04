@@ -29,6 +29,13 @@ std::string getInfo(const std::string& file_path);//string: "filename:namename \
 //string: "dir:test1","file:testFile1"
 std::vector<std::string> ls(const std::string& dir_path);//dir_path:  "/root/dir1/dir2"
 
+//success:0 fail:-1
+int mkdir(const std::string& dir_path);
+
+int removeFile(const std::string& file_path);
+
+int removeDir(const std::string& dir_path);
+
 // used by chunk_node
 int chunkNodeSignIn(const std::string& ip, int port);
 

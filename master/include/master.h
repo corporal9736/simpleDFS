@@ -12,7 +12,10 @@ class master: public PublicSingleton<master>
         master(const master&) = delete;
         master& operator=(const master&) = delete;
         const std::string test();
+
+
         void init(std::string config_path);
+
         int getPort();
         std::vector<chunk_meta> get(const std::string& file_path);
         std::vector<chunk_meta> put(const std::string& path,const std::string& name, int size);
@@ -28,8 +31,9 @@ class master: public PublicSingleton<master>
         dir_node* dir_root;
         
         void parseConfig();
-        void getChunkStates();
-        void parseFileTree(); // get file tree information from a file
+        // void getChunkStates();
+        void parseFileTree(); // get file tree information from a file tree
+        // void saveFileTree();
 
         
 };
