@@ -1,3 +1,4 @@
+#include "json/value.h"
 #include <vector>
 #include "define.h"
 #include "utils.h"
@@ -58,6 +59,15 @@ const int address::getPort() const{
     return this->port;
 }
 
+bool address::equal(const address &addr) const{
+    if(this->port != addr.port)
+        return false;
+    for(int i=0;i<4;i++)
+        if(this->ip[i] != addr.ip[i])
+            return false;
+    return true;
+}
+
 const std::string address::to_string() const{
     return this->getIp() + ":" + std::to_string(this->port);
 }
@@ -76,7 +86,8 @@ config::config(const std::string& path){
     for(int i=0;i<root["chunk_node_ip"].size();i++){
         this->chunk_node_ip.push_back(address(root["chunk_node_ip"][i].asString()));
     }
-    this->file_tree_path = root["file_tree"].asString();
+    this->root_path = root["root_path"].asString();
+    this->chunk_size = root["chunk_size"].asInt();
 }
 
 
@@ -102,10 +113,18 @@ file_meta::file_meta(){
     // TODO
 }
 
-int dir_meta::addFile(const file_meta &file){
+dir_node::dir_node(){
+
+}
+
+dir_node::~dir_node(){//释放内存
+    // TODO
+}
+
+int dir_node::addFile(file_meta* file){
     //先判断文件不重名
     for(int i=0;i<this->files.size();i++){
-        if(this->files[i].file_name == file.file_name){
+        if(this->files[i]->file_name == file->file_name){
             return -1;
         }
     }
@@ -113,15 +132,45 @@ int dir_meta::addFile(const file_meta &file){
     return 0;
 }
 
-int dir_meta::delFile(const file_meta &file){
+int dir_node::delFile(const std::string& file_name){
     for(int i=0;i<this->files.size();i++){
-        if(this->files[i].file_name == file.file_name){
+        if(this->files[i]->file_name == file_name){
             this->files.erase(this->files.begin()+i);
             return 0;
         }
     }
     return -1;
 }
+
+int dir_node::delDir(const std::string &dir_name){
+    for(int i=0;i<this->sub_dir.size();i++){
+        if(this->sub_dir[i]->name == dir_name){
+            delete this->sub_dir[i];
+            this->sub_dir.erase(this->sub_dir.begin()+i);
+            return 0;
+        }
+    }
+    return -1;
+}
+
+dir_node* dir_node::getSubDir(const std::string& dir_name){
+    for(int i=0;i<this->sub_dir.size();i++){
+        if(this->sub_dir[i]->name == dir_name){
+            return this->sub_dir[i];
+        }
+    }
+    return nullptr;
+}
+
+file_meta* dir_node::getFile(const std::string &file_name){
+    for(int i=0;i<this->files.size();i++){
+        if(this->files[i]->file_name == file_name){
+            return this->files[i];
+        }
+    }
+    return nullptr;
+}
+
 const Json::Value file_meta::to_json() const{
     Json::Value file;
     file["type"] = "file";
@@ -133,20 +182,3 @@ const Json::Value file_meta::to_json() const{
     file["size"] = this->size;
     return file;
 }
-
-dir_meta::dir_meta(){}
-
-const Json::Value dir_meta::to_json() const{
-    Json::Value dir;
-    dir["type"] = "dir";
-    dir["name"] = this->name;
-    for(const auto i: this->files){
-        dir["files"].append(i.to_json());
-    }
-    for(const auto i: this->sub_dir){
-        dir["sub"].append(i.to_json());
-    }
-    return dir;
-}
-
-

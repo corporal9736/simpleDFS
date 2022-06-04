@@ -15,6 +15,7 @@
             const std::string getIp() const;
             const int getPort() const;
             const std::string to_string() const;
+            bool equal(const address& addr) const;
             uint8_t ip[4];
             uint16_t port;
     };
@@ -33,8 +34,9 @@
         public:
             config(const std::string& path);
             address master_ip;
-            std::string file_tree_path;
+            std::string root_path;
             std::vector<address> chunk_node_ip;
+            int chunk_size;
     };
 
     class chunk_node_state {
@@ -42,6 +44,7 @@
             chunk_node_state();
             address chunk_node_ip;
             int storge_left; //percent of left space
+            int last_update_time;
     };
 
     class chunk_meta {
@@ -66,12 +69,17 @@
     class dir_node{
         public:
             dir_node();
+            ~dir_node();
             std::string name;
-            const Json::Value to_json() const;
-            std::vector<file_meta> files;
-            std::vector<dir_node> sub_dir;
-            int addFile(const file_meta& file);
-            int delFile(const file_meta& file);
+            // const Json::Value to_json() const;
+            std::vector<file_meta*> files;
+            std::vector<dir_node*> sub_dir;
+            //下面两个不做递归
+            int addFile(file_meta* file);//这个功能应该在master里面实现
+            int delFile(const std::string& file_name);
+            int delDir(const std::string& dir_name);
+            dir_node* getSubDir(const std::string& dir_name);
+            file_meta* getFile(const std::string& file_name);
     };
     
 

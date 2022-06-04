@@ -1,5 +1,6 @@
 #ifndef RPC_H
 #define RPC_H
+#include "define.h"
 #include "master.h"
 
 
@@ -37,7 +38,7 @@ int removeFile(const std::string& file_path);
 int removeDir(const std::string& dir_path);
 
 // used by chunk_node
-int chunkNodeSignIn(const std::string& ip, int port);
+int chunkNodeSignIn(const chunk_node_state& state);
 
 
 // update master->states
@@ -47,6 +48,6 @@ void updateState(const chunk_node_state& state);
 // call this every minute to show chunk_node still alive
 // if not called for three times, delete this chunk_node
 // from master->state
-void heartBeat();
+void heartBeat();//emm
 
 #endif //RPC_H
