@@ -8,5 +8,7 @@ int main(int argc, char* argv[]){
     // if get one args, it should be address formatted as 
     // "127.0.0.1:8080". check and try to connect and print
     // result
+    auto& cl = client::getInstance();
+    cl.run();
     return 0;
 }
