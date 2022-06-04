@@ -14,3 +14,4 @@ to fetch these libraries
 # Prerequests
 * cmake >= 3.10
 * a cpp complier support c++14 standard
+* sudo apt-get install uuid-dev

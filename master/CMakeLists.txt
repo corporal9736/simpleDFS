@@ -10,4 +10,4 @@ INCLUDE_DIRECTORIES(
 AUX_SOURCE_DIRECTORY(src SOURCES)
 
 add_executable(${PROJECT_NAME} ${SOURCES} config.json)
-target_link_libraries(${PROJECT_NAME} rpc jsoncpp_lib st_tree utils)
+target_link_libraries(${PROJECT_NAME} rpc jsoncpp_lib st_tree utils uuid)

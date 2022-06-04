@@ -4,8 +4,6 @@
 #include "master.h"
 #include "utils.h"
 
-
-void bindAll(rpc::server& server);
 // just for test
 std::string test();
 
@@ -44,11 +42,13 @@ int removeDir(const std::string& dir_path);
 
 // update master->states
 // also can be used for new chunk_node online
-void updateState(const chunk_node_state& state);
+void updateState(const std::string& state);
 
 // call this every minute to show chunk_node still alive
 // if not called for three times, delete this chunk_node
 // from master->state
 void heartBeat();//emm
+
+void bindAll(rpc::server& server);
 
 #endif //RPC_H

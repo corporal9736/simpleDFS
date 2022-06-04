@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include "json/json.h"
+
 address::address(){
     for(int i=0;i<4;i++)
         this->ip[i]  = 0;
@@ -119,6 +120,14 @@ dir_node::dir_node(){
 
 dir_node::~dir_node(){//释放内存
     // TODO
+    //delete所有的file和dir_node
+    //这里其实还可以给node发送任务删除对应的chunk
+    for(int i=0;i<this->files.size();i++){
+        delete this->files[i];
+    }
+    for(int i=0;i<this->sub_dir.size();i++){
+        delete this->sub_dir[i];
+    }
 }
 
 int dir_node::addFile(file_meta* file){
@@ -135,6 +144,7 @@ int dir_node::addFile(file_meta* file){
 int dir_node::delFile(const std::string& file_name){
     for(int i=0;i<this->files.size();i++){
         if(this->files[i]->file_name == file_name){
+            delete this->files[i];
             this->files.erase(this->files.begin()+i);
             return 0;
         }

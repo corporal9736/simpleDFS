@@ -13,6 +13,7 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include "utils.h"
+#include <uuid/uuid.h>
 
 
 master::master(){
@@ -20,7 +21,7 @@ master::master(){
     this->isInited = false;
 }
 
-void master::init(std::string config_path){//没写完
+void master::init(std::string config_path){
     this->config_path = config_path;
     this->parseConfig();
     // this->getChunkStates();
@@ -328,7 +329,11 @@ std::string getUUID(){
     // TODO
     // generate a uuid
     // return uuid
-    return "test";
+    char uuid[37];
+    uuid_t uuid_t;
+    uuid_generate(uuid_t);
+    uuid_unparse(uuid_t,uuid);
+    return uuid;
 }
 
 void master::splitChunk(file_meta* file){
@@ -368,8 +373,8 @@ void master::splitChunk(file_meta* file){
 
 void master_test(){
     auto& m=master::getInstance();
-    m.mkdir("/test2/test3");
-    m.put("/test2/test3","test.txt","test",80000000);
+    m.mkdir("/test2");
+    m.put("/test2","test.txt","test123",80000000);
     std::vector<chunk_meta> e=m.get("/test2/test.txt");
     std::cout<<e[0].chunk_node_ip[0].to_string()<<std::endl;
     std::cout<<m.ls("/test2")[0]<<std::endl;

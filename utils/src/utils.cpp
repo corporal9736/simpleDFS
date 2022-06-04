@@ -89,3 +89,27 @@ std::string generateChunkMeta(const std::vector<chunk_meta> &chunkMeta){
     Json::FastWriter writer;
     return writer.write(root);
 }
+
+chunk_node_state getChunkNodeState(const std::string &JsonInfo){
+    chunk_node_state res;
+    Json::Value root;
+    Json::Reader reader;
+    if(!reader.parse(JsonInfo, root))
+    {
+        std::cout << "parse json error" << std::endl;
+        return res;
+    }
+    res.storge_left = root["storage_left"].asInt();
+    res.last_update_time = root["last_update_time"].asInt();
+    res.chunk_node_ip = address(root["chunk_node_ip"].asString());
+    return res;
+}
+
+std::string generateChunkNodeState(const chunk_node_state &chunkNodeState){
+    Json::Value root;
+    root["storage_left"] = chunkNodeState.storge_left;
+    root["last_update_time"] = chunkNodeState.last_update_time;
+    root["chunk_node_ip"] = chunkNodeState.chunk_node_ip.to_string();
+    Json::FastWriter writer;
+    return writer.write(root);
+}

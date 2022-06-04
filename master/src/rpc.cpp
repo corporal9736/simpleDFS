@@ -1,4 +1,5 @@
 #include "rpc.h"
+#include "utils.h"
 
 void bindAll(rpc::server &server){
     server.bind("test", &test);
@@ -23,7 +24,7 @@ std::string get(const std::string& file_path){
     return generateChunkMeta(m.get(file_path));
 }
 
-std::string put(const std::string& path,const std::string& name,std::string& comment, int size){//不着急写
+std::string put(const std::string& path,const std::string name,const std::string comment, int size){
     auto& m = master::getInstance();
     return generateChunkMeta(m.put(path,name,comment,size));
 }
@@ -53,9 +54,9 @@ int removeDir(const std::string &dir_path){
     return m.rmdir(dir_path);
 }
 
-void updateState(const chunk_node_state &state){
+void updateState(const std::string &state){
     auto& m = master::getInstance();
-    m.updateState(state);
+    m.updateState(getChunkNodeState(state));
 }
 
 void heartBeat(){}

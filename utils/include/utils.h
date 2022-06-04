@@ -15,4 +15,8 @@ std::vector<chunk_meta> getChunkMeta(const std::string &JsonInfo);
 
 std::string generateChunkMeta(const std::vector<chunk_meta> &chunkMeta);
 
+chunk_node_state getChunkNodeState(const std::string &JsonInfo);
+
+std::string generateChunkNodeState(const chunk_node_state &chunkNodeState);
+
 #endif //UTILS_H
