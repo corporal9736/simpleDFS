@@ -15,6 +15,7 @@ class chunk_node:public PublicSingleton<chunk_node>{
         //然后是put和get方法
         std::string get(std::string chunk_hash);
     private:
+        chunk_node();
         int port;
 };
 

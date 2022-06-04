@@ -68,12 +68,7 @@ std::string master::getInfo(const std::string &file_path){
 }
 
 void master::parseFileTree(){
-    Json::Reader reader;
-    std::ifstream ifs(this->master_config->file_tree_path, std::ifstream::binary);
-    if(!reader.parse(ifs, this->file_tree_root, false)){
-        std::cout<<"parse file tree error!"<<std::endl;
-        exit(1);
-    }
+
 }
 
 const bool is_directory(Json::Value node){

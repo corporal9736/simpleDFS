@@ -5,6 +5,9 @@
 #include <thread>
 #include "json/json.h"
 
+
+chunk_node::chunk_node(){}
+
 void chunk_node::init(std::string configPath){
     //chunk.json的信息，包含port，master的地址
     std::ifstream ifs(configPath);
