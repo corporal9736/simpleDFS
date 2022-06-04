@@ -1,5 +1,6 @@
 {
-    "master_ip": "127.0.0.1",
-    "master_port": 1234,
-    "node_port": 1234
+    "master_addr": "127.0.0.1:1234",
+    "node_addr":"127.0.0.1:1235",
+    "node_root": "/home/corporal/Works/c_cpp/simpleDFS/test/chunk1",
+    "max_size": 21474836480
 }
