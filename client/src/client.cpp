@@ -270,7 +270,7 @@ void client::ls(const std::string &server_file) {
 void client::put(const std::string &local_file, const std::string &server_file, const std::string &comment)
 {
     struct stat statbuf;
-    size_f filesize;
+    int filesize;
     if (stat(local_file.c_str(), &statbuf) == 0)
     {
         filesize = statbuf.st_size;  /* long to size_f */
