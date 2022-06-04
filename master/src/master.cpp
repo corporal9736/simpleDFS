@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <fstream>
 #include "master.h"
 #include "json/json.h"
 #include "rpc.h"
@@ -16,6 +17,7 @@ void master::init(std::string config_path){
     this->config_path = config_path;
     this->parseConfig();
     this->getChunkStates();
+    this->parseFileTree();
     this->isInited = true;
 }
 
@@ -47,12 +49,12 @@ std::vector<chunk_meta> master::get(const std::string& file_path){
     // TODO
     // get file_path's chunk_meta from this->files
     // return the result
-    std::string key=file_path;
-    std::vector<chunk_meta> result;
-    if(this->files->find(key)!=this->files->end()){
-        result=this->files->at(key);
-    }
-    return result;
+    // std::string key=file_path;
+    // std::vector<chunk_meta> result;
+    // if(this->files->find(key)!=this->files->end()){
+    //     result=this->files->at(key);
+    // }
+    // return result;
 }
 
 std::vector<chunk_meta> master::put(const std::string &path, const std::string &name, int size){
@@ -63,4 +65,21 @@ std::vector<chunk_meta> master::put(const std::string &path, const std::string &
 std::string master::getInfo(const std::string &file_path){
     // TODO
     //
+}
+
+void master::parseFileTree(){
+    Json::Reader reader;
+    std::ifstream ifs(this->master_config->file_tree_path, std::ifstream::binary);
+    if(!reader.parse(ifs, this->file_tree_root, false)){
+        std::cout<<"parse file tree error!"<<std::endl;
+        exit(1);
+    }
+}
+
+const bool is_directory(Json::Value node){
+    return !node.isArray();
+}
+
+const bool is_file(Json::Value node){
+    return node.isArray();
 }
