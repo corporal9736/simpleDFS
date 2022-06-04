@@ -54,7 +54,9 @@ int parseline(const char *cmdline, char **argv)
     return argc;
 }
 
+client::client(){}
 
+client::~client(){}
 
 void client::connect(const std::string &master_addr)
 {
@@ -151,7 +153,7 @@ void client::parseInput(const std::string &command)
         return;
     }
 
-    if (strcmp(argv[0], "connect"))
+    if (!strcmp(argv[0], "connect"))
     {
         if (argc < 2)
         {
@@ -165,7 +167,7 @@ void client::parseInput(const std::string &command)
         std::cout<<"please connect the server first!"<<std::endl;
         return;
     }
-    else if (strcmp(argv[0], "ls"))
+    else if (!strcmp(argv[0], "ls"))
     {
         if (argc<2)
         {
@@ -175,7 +177,7 @@ void client::parseInput(const std::string &command)
         const std::string dir(argv[1]);
         this->ls(dir);
     }
-    else if (strcmp(argv[0], "put"))
+    else if (!strcmp(argv[0], "put"))
     {
         if (argc < 4)
         {
@@ -187,7 +189,7 @@ void client::parseInput(const std::string &command)
         const std::string comment(argv[3]);
         this->put(local_file, server_file, comment);
     }
-    else if (strcmp(argv[0], "get"))
+    else if (!strcmp(argv[0], "get"))
     {
         if (argc < 3)
         {
@@ -198,7 +200,7 @@ void client::parseInput(const std::string &command)
         const std::string local_file(argv[2]);
         this->get(server_file, local_file);
     }
-    else if (strcmp(argv[0], "info"))
+    else if (!strcmp(argv[0], "info"))
     {
         if (argc < 2)
         {
@@ -208,7 +210,7 @@ void client::parseInput(const std::string &command)
         const std::string server_file(argv[1]);
         this->info(server_file);
     }
-    else if(strcmp(argv[0], "mkdir"))
+    else if(!strcmp(argv[0], "mkdir"))
     {
         if (argc < 2)
         {
@@ -218,7 +220,7 @@ void client::parseInput(const std::string &command)
         const std::string dir(argv[0]);
         this->mkdir(dir);
     }
-    else if(strcmp(argv[0], "rm"))
+    else if(!strcmp(argv[0], "rm"))
     {
         if (argc < 2)
         {
@@ -228,7 +230,7 @@ void client::parseInput(const std::string &command)
         const std::string file(argv[0]);
         this->removeFile(file);
     }
-    else if(strcmp(argv[0], "rmdir"))
+    else if(!strcmp(argv[0], "rmdir"))
     {
         if (argc < 2)
         {
@@ -238,11 +240,11 @@ void client::parseInput(const std::string &command)
         const std::string dir(argv[0]);
         this->removeDir(dir);
     }
-    else if (strcmp(argv[0], "help"))
+    else if (!strcmp(argv[0], "help"))
     {
         this->help();
     }
-    else if (strcmp(argv[0], "quit"))
+    else if (!strcmp(argv[0], "quit"))
     {
         exit(0);
     }
