@@ -14,6 +14,7 @@ class chunk_node:public PublicSingleton<chunk_node>{
         int getPort();
         //然后是put和get方法
     private:
+        chunk_node();
         int port;
 };
 
