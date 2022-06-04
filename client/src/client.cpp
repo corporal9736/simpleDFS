@@ -1,6 +1,5 @@
 #include  <iostream>
-#include "client/include/client.h"
-#include "chunk_node.h"
+#include "../include/client.h"
 #include <string.h>
 #include <stdio.h>
 #include <fstream>
@@ -209,6 +208,36 @@ void client::parseInput(const std::string &command)
         const std::string server_file(argv[1]);
         this->info(server_file);
     }
+    else if(strcmp(argv[0], "mkdir"))
+    {
+        if (argc < 2)
+        {
+            std::cout<< "Please input directory path! "<<std::endl;
+            return;
+        }
+        const std::string dir(argv[0]);
+        this->mkdir(dir);
+    }
+    else if(strcmp(argv[0], "rm"))
+    {
+        if (argc < 2)
+        {
+            std::cout<< "Please input file path! "<<std::endl;
+            return;
+        }
+        const std::string file(argv[0]);
+        this->removeFile(file);
+    }
+    else if(strcmp(argv[0], "rmdir"))
+    {
+        if (argc < 2)
+        {
+            std::cout<< "Please input directory path! "<<std::endl;
+            return;
+        }
+        const std::string dir(argv[0]);
+        this->removeDir(dir);
+    }
     else if (strcmp(argv[0], "help"))
     {
         this->help();
@@ -252,8 +281,8 @@ void client::put(const std::string &local_file, const std::string &server_file, 
         return;
     }
 
-    std::vector<chunk_meta> target = this->rpc_client->call("put", server_file, local_file, comment, filesize)
-                                         .as<std::vector<chunk_meta>>();
+    std::string info = this->rpc_client->call("put", server_file, local_file, comment, filesize).as<std::string>();
+    std::vector<chunk_meta> target = getChunkMeta(info);
     int block_size = this->rpc_client->call("getBlockSize").as<int>(); /* 获取块大小，还没有这个接口 */
 
     std::vector<chunk_meta>::iterator hash_iter;
@@ -286,9 +315,8 @@ void client::put(const std::string &local_file, const std::string &server_file, 
 
 void client::get(const std::string &server_file, const std::string &local_file)
 {
-    std::vector<chunk_meta> target = this->rpc_client->call("get", server_file)
-                                         .as<std::vector<chunk_meta>>();
-
+    std::string info = this->rpc_client->call("get", server_file).as<std::string>();
+    std::vector<chunk_meta> target = getChunkMeta(info);
     if (target.size() == 0)
     {
         std::cout << "No file " << server_file << "exist in the server" << std::endl;
@@ -312,8 +340,8 @@ void client::get(const std::string &server_file, const std::string &local_file)
         int hash_read_success = 0;
         for (node_iter = hash_iter->chunk_node_ip.begin(); node_iter != hash_iter->chunk_node_ip.end(); node_iter++)
         {
-            std::string ip = node_iter->chunk_node_ip.getIp();
-            int port = node_iter->chunk_node_ip.getPort();
+            std::string ip = node_iter->getIp();
+            int port = node_iter->getPort();
             rpc::client node_client(ip, port);
 
             // try
@@ -326,6 +354,8 @@ void client::get(const std::string &server_file, const std::string &local_file)
             // {
             //     continue;
             // }
+
+            content = node_client.call("get", hash_iter->chunk_hash).as<std::string>();
 
             hash_read_success = 1;
             break;
@@ -348,7 +378,41 @@ void client::get(const std::string &server_file, const std::string &local_file)
 
 void client::info(const std::string &server_file) {
     std::string file_info = this->rpc_client->call("getInfo", server_file).as<std::string>();
-    std::cout<<file_info<<endl;
+    std::cout<<file_info<<std::endl;
+    return;
+}
+
+void client::mkdir(const std::string& dir_path)
+{
+    int state = this->rpc_client->call("mkdir", dir_path).as<int>();
+    if(state<0)
+        std::cout<<"mkdir: unknown error"<<std::endl;
+    else
+        std::cout<<"success"<<std::endl;
+
+    return;
+}
+
+void client::removeFile(const std::string& file_path)
+{
+    int state = this->rpc_client->call("removeFile", file_path).as<int>();
+    if(state<0)
+        std::cout<<"remove file: unknown error"<<std::endl;
+    else
+        std::cout<<"success"<<std::endl;
+
+    return;
+}
+
+
+void client::removeDir(const std::string& dir_path)
+{
+    int state = this->rpc_client->call("removeDir", dir_path).as<int>();
+    if(state<0)
+        std::cout<<"remove directory: unknown error"<<std::endl;
+    else
+        std::cout<<"success"<<std::endl;
+
     return;
 }
 
@@ -360,6 +424,9 @@ void client::help()
     std::cout << "    put <source> <dest> <comment>  | upload the source to destination with comment" << std::endl;
     std::cout << "    get <source> <dest>            | get the file content from source to dest" << std::endl;
     std::cout << "    info <path>                    | get the basic info of file" << std::endl;
+    std::cout << "    mkdir <dir>                    | make directory"<<std::endl;
+    std::cout << "    rm <file>                      | remove file"<<std::endl;
+    std::cout << "    rmdir <dir>                    | remove directory"<<std::endl;      
     std::cout << "    quit                           | quit client" << std::endl;
     return;
 }
