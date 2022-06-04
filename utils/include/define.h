@@ -4,7 +4,6 @@
 #include <string>
 #include <unordered_set>
 #include "json/json.h"
-#include "st_tree.h"
 
     class address{
         public:
@@ -64,13 +63,13 @@
             std::vector<chunk_meta> chunks;
     };
 
-    class dir_meta{
+    class dir_node{
         public:
-            dir_meta();
+            dir_node();
             std::string name;
             const Json::Value to_json() const;
             std::vector<file_meta> files;
-            std::vector<dir_meta> sub_dir;
+            std::vector<dir_node> sub_dir;
             int addFile(const file_meta& file);
             int delFile(const file_meta& file);
     };

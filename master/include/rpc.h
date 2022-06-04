@@ -21,7 +21,12 @@ std::vector<chunk_meta> put(const std::string& path,const std::string name, int 
 // return the basic info of a file
 // if not exist return "not exist"
 // if menu return the child file info
-std::string getInfo(const std::string& file_path);//这个的返回值不应该是string，但应该是啥呢，file_node吗？
+std::string getInfo(const std::string& file_path);//string: "filename:namename \n comment:comment \n size:size"
+
+
+//展示文件目录下的所有文件名以及子文件夹名
+//string: "dir:test1","file:testFile1"
+std::vector<std::string> ls(const std::string& dir_path);//dir_path:  "/root/dir1/dir2"
 
 // used by chunk_node
 int chunkNodeSignIn(const std::string& ip, int port);

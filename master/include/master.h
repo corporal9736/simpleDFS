@@ -25,10 +25,8 @@ class master: public PublicSingleton<master>
         std::string config_path;
         config* master_config;
         std::vector<chunk_node_state> states;
-        std::unordered_map<std::string, file_meta>* files;
+        dir_node* dir_root;
         
-
-
         void parseConfig();
         void getChunkStates();
         void parseFileTree(); // get file tree information from a file
