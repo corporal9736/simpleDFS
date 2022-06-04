@@ -3,6 +3,8 @@
 #include <vector>
 #include <string>
 #include <unordered_set>
+#include "json/json.h"
+#include "st_tree.h"
 
     class address{
         public:
@@ -11,8 +13,9 @@
             address(const std::string& addr);
             address(const address& addr);
             const address& operator=(const address& addr);
-            const std::string getIp();
-            const int getPort();
+            const std::string getIp() const;
+            const int getPort() const;
+            const std::string to_string() const;
             uint8_t ip[4];
             uint16_t port;
     };
@@ -31,6 +34,7 @@
         public:
             config(const std::string& path);
             address master_ip;
+            std::string file_tree_path;
             std::vector<address> chunk_node_ip;
     };
 
@@ -45,34 +49,31 @@
         public:
             chunk_meta();
             std::string chunk_hash;
-            // std::unordered_set<address, address_hash> chunk_node_ip;
-            std::vector<chunk_node_state> chunk_node_ip;
+            std::vector<address> chunk_node_ip;
+            const Json::Value to_json() const;
+            friend void from_json(chunk_meta& chunk);
     };
-
-    // typedef struct struct_file_meta{
-    //     std::string file_name;
-    //     std::vector<chunk_meta> chunks;
-    // } file_meta;
 
     class file_meta{
         public:
             file_meta();
+            const Json::Value to_json() const;
             std::string file_name;
             std::string comments;
+            int size;
             std::vector<chunk_meta> chunks;
     };
 
-    class directory_node{
+    class dir_meta{
         public:
-            directory_node();
+            dir_meta();
             std::string name;
-            // std::vector<directory_node> sub_dir;
+            const Json::Value to_json() const;
             std::vector<file_meta> files;
+            std::vector<dir_meta> sub_dir;
             int addFile(const file_meta& file);
             int delFile(const file_meta& file);
     };
-
-
     
 
 #endif //DEFINE_H

@@ -48,14 +48,18 @@ const address& address::operator=(const address& addr){
     return *this;
 }
 
-const std::string address::getIp(){
+const std::string address::getIp() const{
     // TODO: concat ip to string and return
     std::string ip_str=std::to_string(this->ip[0])+"."+std::to_string(this->ip[1])+"."+std::to_string(this->ip[2])+"."+std::to_string(this->ip[3]);
     return ip_str;
 }
 
-const int address::getPort(){
+const int address::getPort() const{
     return this->port;
+}
+
+const std::string address::to_string() const{
+    return this->getIp() + ":" + std::to_string(this->port);
 }
 
 config::config(const std::string& path){
@@ -68,10 +72,11 @@ config::config(const std::string& path){
         std::cout<<"parse config file error!"<<std::endl;
         exit(1);
     }
-    this->master_ip = address(root["master_ip"].asCString());
+    this->master_ip = address(root["master_ip"].asString());
     for(int i=0;i<root["chunk_node_ip"].size();i++){
-        this->chunk_node_ip.push_back(address(root["chunk_node_ip"][i].asCString()));
+        this->chunk_node_ip.push_back(address(root["chunk_node_ip"][i].asString()));
     }
+    this->file_tree_path = root["file_tree"].asString();
 }
 
 
@@ -83,11 +88,21 @@ chunk_meta::chunk_meta(){
     // TODO
 }
 
+const Json::Value chunk_meta::to_json() const{
+    Json::Value chunk;
+    chunk["type"] = "chunk";
+    chunk["hash"] = this->chunk_hash;
+    for(const auto i: this->chunk_node_ip){
+        chunk["chunk_node_ip"].append(i.to_string());
+    }
+    return chunk;
+}
+
 file_meta::file_meta(){
     // TODO
 }
 
-int directory_node::addFile(const file_meta &file){
+int dir_meta::addFile(const file_meta &file){
     //先判断文件不重名
     for(int i=0;i<this->files.size();i++){
         if(this->files[i].file_name == file.file_name){
@@ -98,7 +113,7 @@ int directory_node::addFile(const file_meta &file){
     return 0;
 }
 
-int directory_node::delFile(const file_meta &file){
+int dir_meta::delFile(const file_meta &file){
     for(int i=0;i<this->files.size();i++){
         if(this->files[i].file_name == file.file_name){
             this->files.erase(this->files.begin()+i);
@@ -107,3 +122,31 @@ int directory_node::delFile(const file_meta &file){
     }
     return -1;
 }
+const Json::Value file_meta::to_json() const{
+    Json::Value file;
+    file["type"] = "file";
+    file["name"] = this->file_name;
+    file["comments"] = this->comments;
+    for(const auto i: this->chunks){
+        file["chunks"].append(i.to_json());
+    }
+    file["size"] = this->size;
+    return file;
+}
+
+dir_meta::dir_meta(){}
+
+const Json::Value dir_meta::to_json() const{
+    Json::Value dir;
+    dir["type"] = "dir";
+    dir["name"] = this->name;
+    for(const auto i: this->files){
+        dir["files"].append(i.to_json());
+    }
+    for(const auto i: this->sub_dir){
+        dir["sub"].append(i.to_json());
+    }
+    return dir;
+}
+
+
