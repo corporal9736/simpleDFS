@@ -13,7 +13,6 @@ class chunk_node:public PublicSingleton<chunk_node>{
         void init(std::string configPath);//chunk的信息，包含port，master的地址
         int getPort();
         //然后是put和get方法
-        std::string get(std::string chunk_hash);
     private:
         chunk_node();
         int port;
