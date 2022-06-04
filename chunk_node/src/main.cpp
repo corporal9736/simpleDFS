@@ -4,7 +4,6 @@
 int main(){
     // std::cout << "hello chunk_node" << std::endl;
     auto& cn=chunk_node::getInstance();
-    cn.setPort(12138);
     cn.init("/home/thunder/CODE/c/simpleDFS/chunk_node/config.json");
     rpc::server cn_server(cn.getPort());//手动设置吧
     bindAll(cn_server);

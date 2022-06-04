@@ -1,0 +1,5 @@
+{
+    "master_ip": "127.0.0.1",
+    "master_port": 1234,
+    "node_port": 1234
+}

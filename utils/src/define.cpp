@@ -87,3 +87,23 @@ file_meta::file_meta(){
     // TODO
 }
 
+int directory_node::addFile(const file_meta &file){
+    //先判断文件不重名
+    for(int i=0;i<this->files.size();i++){
+        if(this->files[i].file_name == file.file_name){
+            return -1;
+        }
+    }
+    this->files.push_back(file);
+    return 0;
+}
+
+int directory_node::delFile(const file_meta &file){
+    for(int i=0;i<this->files.size();i++){
+        if(this->files[i].file_name == file.file_name){
+            this->files.erase(this->files.begin()+i);
+            return 0;
+        }
+    }
+    return -1;
+}
