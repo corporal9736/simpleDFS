@@ -1,5 +1,6 @@
 #include "rpc.h"
 #include "utils.h"
+#include <iostream>
 
 void bindAll(rpc::server &server){
     server.bind("test", &test);
@@ -24,9 +25,10 @@ std::string get(const std::string& file_path){
     return generateChunkMeta(m.get(file_path));
 }
 
-std::string put(const std::string& path,const std::string name,const std::string comment, int size){
+std::string put(const std::string& path,const std::string comment, int size){
     auto& m = master::getInstance();
-    return generateChunkMeta(m.put(path,name,comment,size));
+    std::cout<<"put "<<path<<" "<<comment<<" "<<size<<std::endl;
+    return generateChunkMeta(m.put(path,comment,size));
 }
 
 std::string getInfo(const std::string& file_path){

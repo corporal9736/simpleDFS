@@ -17,7 +17,7 @@ std::string get(const std::string& file_path);
 // which the chunks will be sent to
 // TODO: check how to express size
 //path是在目录树的path不是client的path
-std::string put(const std::string& path,const std::string name,const std::string comment, int size);//这里涉及到传文件的问题
+std::string put(const std::string& path,const std::string comment, int size);//这里涉及到传文件的问题
 
 // return the basic info of a file
 // if not exist return "not exist"

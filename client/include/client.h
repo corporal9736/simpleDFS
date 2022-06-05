@@ -10,7 +10,7 @@
 
 #define MAXLINE 1024   /* max line size */
 #define MAXARGS 128    /* max args on a command line */
-#define READBUFSIZE 4096
+#define READBUFSIZE 1024*1024*64
 
 
 class client:public PublicSingleton<client>{

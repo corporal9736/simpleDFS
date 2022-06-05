@@ -3,6 +3,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 
 project(simpleDFS_client)
+set(CMAKE_CXX_FLAGS -pthread)
 
 INCLUDE_DIRECTORIES(
     ${PROJECT_SOURCE_DIR}/include/

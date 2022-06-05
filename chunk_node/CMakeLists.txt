@@ -3,11 +3,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 
 project(simpleDFS_chunk)
+set(CMAKE_CXX_FLAGS -pthread)
 
 INCLUDE_DIRECTORIES(
     ${PROJECT_SOURCE_DIR}/include/
 )
 AUX_SOURCE_DIRECTORY(src SOURCES)
 ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCES})
-target_link_libraries(${PROJECT_NAME} rpc utils jsoncpp)
+target_link_libraries(${PROJECT_NAME} rpc utils jsoncpp_lib)
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)

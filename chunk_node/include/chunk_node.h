@@ -10,7 +10,7 @@ class chunk_node:public PublicSingleton<chunk_node>{
     public:
         chunk_node(const chunk_node&) = delete;
         chunk_node& operator=(const chunk_node&) = delete;
-        void init(const std::string& configPath);//chunk的信息，包含port，master的地址
+        void init(const std::string& configPath,int num=0);//chunk的信息，包含port，master的地址
         int getPort();
         //然后是put和get方法
         std::string get(const std::string& hash);

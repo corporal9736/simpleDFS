@@ -21,7 +21,7 @@ class master: public PublicSingleton<master>
 
         //client
         std::vector<chunk_meta> get(const std::string& file_path);
-        std::vector<chunk_meta> put(const std::string& path,const std::string& name,const std::string& comment, int size);
+        std::vector<chunk_meta> put(const std::string& path,const std::string& comment, int size);
         std::string getInfo(const std::string& file_path);
         std::vector<std::string> ls(const std::string& path);
         int mkdir(const std::string& path);

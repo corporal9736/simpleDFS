@@ -67,7 +67,7 @@ std::vector<chunk_meta> master::get(const std::string& file_path){
     return chunk_metas;
 }
 
-std::vector<chunk_meta> master::put(const std::string &path, const std::string &name,const std::string &comments, int size){
+std::vector<chunk_meta> master::put(const std::string &path,const std::string &comments, int size){
     // TODO
     // 文件分块、分配chunk节点、写入chunk节点信息
     // 如果文件不存在，创建文件，分配chunk节点，写入chunk节点信息
@@ -76,27 +76,29 @@ std::vector<chunk_meta> master::put(const std::string &path, const std::string &
     std::vector<chunk_meta> chunk_metas;
     dir_node* dir = this->dir_root;
     std::vector<std::string> path_list = split(path, "/");
-    for(int i = 0; i < path_list.size(); i++){
+    int i=0;
+    for(i = 0; i < path_list.size()-1; i++){
         if(path_list[i] == "")
             continue;
         dir = dir->getSubDir(path_list[i]);
         if(dir == NULL)
             return chunk_metas;
     }
-    file_meta* file = dir->getFile(name);
+    file_meta* file = dir->getFile(path_list[i]);
     if(file == NULL){
         file_meta* new_file= new file_meta();
-        new_file->file_name = name;
+        new_file->file_name = path_list[i];
         new_file->comments = comments;
         new_file->size = size;
         splitChunk(new_file);
-        if(dir->addFile(new_file))
+        if(dir->addFile(new_file)){
+            std::cout<<"add file error"<<std::endl;
             return chunk_metas;
+        }
         chunk_metas = new_file->chunks;
         //同时将文件信息Json后写入文件
         std::string file_path = this->master_config->root_path + path;
-        std::string file_name = file_path + "/" + name;
-        std::ofstream ofs(file_name);
+        std::ofstream ofs(file_path);
         Json::Value root=new_file->to_json();
         ofs<<root;
         ofs.close();
@@ -236,6 +238,7 @@ void master::updateState(const chunk_node_state &state){
     //查看states中是否有该chunk_node
     //如果有，更新chunk_node的状态
     //如果没有，添加chunk_node
+    std::cout<<state.chunk_node_ip.to_string()<<std::endl;
     for(auto it = this->states.begin(); it != this->states.end(); it++){
         if((*it).chunk_node_ip.equal(state.chunk_node_ip)){
             (*it).storge_left = state.storge_left;
@@ -374,7 +377,7 @@ void master::splitChunk(file_meta* file){
 void master_test(){
     auto& m=master::getInstance();
     m.mkdir("/test2");
-    m.put("/test2","test.txt","test123",80000000);
+    m.put("/test2/text.txt","test123",80000000);
     std::vector<chunk_meta> e=m.get("/test2/test.txt");
     std::cout<<e[0].chunk_node_ip[0].to_string()<<std::endl;
     std::cout<<m.ls("/test2")[0]<<std::endl;

@@ -1,6 +1,6 @@
 {
     "master_addr": "127.0.0.1:1234",
     "node_addr":"127.0.0.1:1235",
-    "node_root": "/home/corporal/Works/c_cpp/simpleDFS/test/chunk1",
+    "node_root": "/home/thunder/CODE/c/simpleDFS/display/chunk_node/root",
     "max_size": 21474836480
 }

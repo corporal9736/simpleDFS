@@ -9,10 +9,11 @@
 #include "rpc/client.h"
 #include "json/json.h"
 #include "utils.h"
+
 namespace fs = std::filesystem;
 chunk_node::chunk_node(){}
 
-void chunk_node::init(const std::string& configPath){
+void chunk_node::init(const std::string& configPath,int num){
     //chunk.json的信息，包含port，master的地址
     std::ifstream ifs(configPath);
     if(!ifs){
@@ -25,9 +26,10 @@ void chunk_node::init(const std::string& configPath){
         std::cout<<"parse config file failed"<<std::endl;
         exit(1);
     }
-    this->addr = address(root["node_addr"].asString());
+    this->addr = address(std::string("127.0.0.1:900"+std::to_string(num)));
     this->master_addr = address(root["master_addr"].asString());
-    this->root = root["node_root"].asString();
+    //root后面加上num
+    this->root = root["node_root"].asString()+std::to_string(num);
     this->total_size = root["max_size"].asInt64();
     //连接master
 }
@@ -48,7 +50,8 @@ std::string chunk_node::get(const std::string &hash){
 }
 
 void chunk_node::put(const std::string &content, const std::string &hash){
-    std::string path = this->root + "/" + "hash";
+    std::string path = this->root + "/" + hash;
+    // std::cout<<content<<std::endl;
     std::ofstream O(path,std::ofstream::binary);
 	O << content;
     O.flush();
@@ -65,7 +68,7 @@ void chunk_node::reportState() const{
     st.chunk_node_ip = this->addr;
     st.last_update_time = time(NULL);
     st.storge_left = crnt_size / this->total_size;
-    rpc::client ct(this->addr.getIp(),this->addr.getPort());
+    rpc::client ct(this->master_addr.getIp(),this->master_addr.getPort());
     // ct->async_call("updateState", generateChunkNodeState(st));
     ct.call("updateState", generateChunkNodeState(st));
 }

@@ -2,9 +2,8 @@
     "version":"1.0",
     "master_ip": "127.0.0.1:1234",
     "chunk_node_ip": [
-        "127.0.0.1:1235",
-        "127.0.0.1:1236"
+        "127.0.0.1:1235"
     ],
-    "root_path": "/home/thunder/CODE/c/simpleDFS/master/root",
+    "root_path": "/home/thunder/CODE/c/simpleDFS/display/master/root",
     "chunk_size": 67108864
 }

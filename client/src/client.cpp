@@ -1,5 +1,5 @@
 #include  <iostream>
-#include "../include/client.h"
+#include "client.h"
 #include <string.h>
 #include <stdio.h>
 #include <fstream>
@@ -190,7 +190,7 @@ void client::parseInput(const std::string &command)
             std::cout<< "Please input directory path! "<<std::endl;
             return;
         }
-        const std::string dir(argv[0]);
+        const std::string dir(argv[1]);
         this->mkdir(dir);
     }
     else if(!strcmp(argv[0], "rm"))
@@ -200,7 +200,7 @@ void client::parseInput(const std::string &command)
             std::cout<< "Please input file path! "<<std::endl;
             return;
         }
-        const std::string file(argv[0]);
+        const std::string file(argv[1]);
         this->removeFile(file);
     }
     else if(!strcmp(argv[0], "rmdir"))
@@ -210,7 +210,7 @@ void client::parseInput(const std::string &command)
             std::cout<< "Please input directory path! "<<std::endl;
             return;
         }
-        const std::string dir(argv[0]);
+        const std::string dir(argv[1]);
         this->removeDir(dir);
     }
     else
@@ -247,23 +247,30 @@ void client::put(const std::string &local_file, const std::string &server_file, 
         std::cerr << "File: " << local_file << " not exist!" << std::endl;
         return;
     }
-
-    std::string info = this->rpc_client->call("put", server_file, local_file, comment, filesize).as<std::string>();
+    // std::cout<<"filesize: "<<filesize<<std::endl;
+    std::string info = this->rpc_client->call("put", server_file, comment, filesize).as<std::string>();
+    // std::cout<<info<<std::endl;
     std::vector<chunk_meta> target = getChunkMeta(info);
-    int block_size = this->rpc_client->call("getBlockSize").as<int>(); /* 获取块大小，还没有这个接口 */
+    // int block_size = this->rpc_client->call("getBlockSize").as<int>(); /* 获取块大小，还没有这个接口 */
+    int block_size = 1024*1024*64;
 
     std::vector<chunk_meta>::iterator hash_iter;
     std::vector<address>::iterator node_iter;
 
-    FILE *fp;
-    char *readbuf = (char *)malloc(size_t(READBUFSIZE + 1));
-    fp = fopen(local_file.c_str(), "r");
-
+    //读取文件的READBUFSIZE大小并转化为std::string
+    std::ifstream file(local_file, std::ios::binary);
+    std::string file_content((std::istreambuf_iterator<char>(file)),
+                             std::istreambuf_iterator<char>());
+    std::cout<<"file_content_size: "<<file_content.size()<<std::endl;
+    file.close();
+    int i=0;
     for (hash_iter = target.begin(); hash_iter != target.end(); hash_iter++)
     {
-        fread(readbuf, size_t(READBUFSIZE), 1, fp);
-        const std::string content(readbuf);
+        std::string content=file_content.substr(i*block_size, block_size);
 
+        // const std::string content(readbuf);
+        // std::cout<<content.size()<<std::endl;
+        std::cout<<"uploading chunk: "<<hash_iter->chunk_hash<<std::endl;
         for (node_iter = hash_iter->chunk_node_ip.begin(); node_iter != hash_iter->chunk_node_ip.end(); node_iter++)
         {
             std::string ip = node_iter->getIp();
@@ -271,11 +278,9 @@ void client::put(const std::string &local_file, const std::string &server_file, 
             rpc::client node_client(ip, port);
             node_client.call("put", content, hash_iter->chunk_hash);
         }
+        i++;
     }
     std::cout << std::endl;
-
-    fclose(fp);
-    free(readbuf);
 
     return;
 }
@@ -384,7 +389,7 @@ void client::removeDir(const std::string& dir_path)
 void client::help()
 {
     std::cout << "Usage:" << std::endl;
-    std::cout << "    connect <ip> <port>            | connect to the master" << std::endl;
+    std::cout << "    connect <ip>:<port>            | connect to the master" << std::endl;
     std::cout << "    ls <path>                      | list the files and sub-path names" << std::endl;
     std::cout << "    put <source> <dest> <comment>  | upload the source to destination with comment" << std::endl;
     std::cout << "    get <source> <dest>            | get the file content from source to dest" << std::endl;
