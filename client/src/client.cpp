@@ -65,19 +65,23 @@ void client::connect(const std::string &master_addr)
     this->rpc_client = new rpc::client(master.getIp(), master.getPort());
     std::string testinfo;
 
-    // try
-    // {
-    //     const uint64_t short_timeout = 500;
-    //     this->rpc_client->set_timeout(short_timeout);
-    //     testinfo = this->rpc_client->call("test").as<std::string>();
-    // }
-    // catch (rpc::timeout &t)
-    // {
-    //     std::cerr<<"Time out! Please check your net and try again."<<std::endl;
-    //     return;
-    // }
+    try
+    {
+        // const uint64_t short_timeout = 500;
+        // this->rpc_client->set_timeout(short_timeout);
+        testinfo = this->rpc_client->call("test").as<std::string>();
+    }
+    catch (rpc::system_error &e)
+    {
+        std::cerr<<e.what()<<std::endl;
+        return;
+    }
+    catch (rpc::timeout &e)
+    {
+        std::cerr<<e.what()<<std::endl;
+        return;
+    }
 
-    testinfo = this->rpc_client->call("test").as<std::string>();
 
     if(testinfo == "test success")
     {
@@ -104,45 +108,6 @@ void client::run()
 
 void client::parseInput(const std::string &command)
 {
-    // TODO: write a parser to parse input as listed
-    // first check this->is_connected, if not, print
-    // "not connected, please connect first"
-    //
-    // connect:
-    // args: a string format to ip:port, such as
-    // 127.0.0.1:8080
-    // call this->connect to establish a new connection
-    // return "failed, please try again" if failed and
-    // "success" if connected
-    //
-    // ls:
-    // args: a string, may be a file or path
-    // if is a path, return the file and sub path name
-    // if is a file, return the string itself
-    // if not exist, return "not exist"
-    //
-    // put:
-    // args: two strings, the first one is the target path
-    // and the second one is the file name
-    // if path not exist, return "path not exist"
-    // if on uploading, print current process by percent
-    // and print "success" on complete
-    //
-    // get:
-    // args: a string, the path of the file
-    // if path not exist, return "path not exist"
-    // if on getting, print current process by percent
-    // and print "success" on cpmplete
-    //
-    // info:
-    // args: a string, the path of the file
-    // if path not exist, return "path not exist"
-    // if found, print the basic info defined in file
-    // sturct
-    //
-    // help:
-    // no args
-    // print some help information
 
     char *argv[MAXARGS];
     int argc = parseline(command.c_str(), argv);
@@ -162,6 +127,14 @@ void client::parseInput(const std::string &command)
         }
         const std::string address(argv[1]);
         this->connect(address);
+    }
+    else if (!strcmp(argv[0], "help"))
+    {
+        this->help();
+    }
+    else if (!strcmp(argv[0], "quit"))
+    {
+        exit(0);
     }
     else if(!this->is_connected){
         std::cout<<"please connect the server first!"<<std::endl;
@@ -239,14 +212,6 @@ void client::parseInput(const std::string &command)
         }
         const std::string dir(argv[0]);
         this->removeDir(dir);
-    }
-    else if (!strcmp(argv[0], "help"))
-    {
-        this->help();
-    }
-    else if (!strcmp(argv[0], "quit"))
-    {
-        exit(0);
     }
     else
     {
@@ -346,18 +311,16 @@ void client::get(const std::string &server_file, const std::string &local_file)
             int port = node_iter->getPort();
             rpc::client node_client(ip, port);
 
-            // try
-            // {
-            //     const uint64_t short_timeout = 500;
-            //     node_client.set_timeout(short_timeout);
-            //     content = node_client.call("get", hash_iter->chunk_hash).as<std::string>();
-            // }
-            // catch (rpc::timeout &t)
-            // {
-            //     continue;
-            // }
-
-            content = node_client.call("get", hash_iter->chunk_hash).as<std::string>();
+            try
+            {
+                const uint64_t short_timeout = 500;
+                node_client.set_timeout(short_timeout);
+                content = node_client.call("get", hash_iter->chunk_hash).as<std::string>();
+            }
+            catch (rpc::timeout &t)
+            {
+                continue;
+            }
 
             hash_read_success = 1;
             break;
