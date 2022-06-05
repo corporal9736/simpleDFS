@@ -3,6 +3,7 @@
 
 #include <string>
 #include "rpc/client.h"
+#include "rpc/rpc_error.h"
 #include "define.h"
 #include "singleton.h"
 #include "utils.h"
